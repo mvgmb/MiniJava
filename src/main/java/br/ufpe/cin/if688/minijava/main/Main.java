@@ -10,13 +10,13 @@ import java.io.IOException;
 
 public class Main {
 
-	public static void main(String[] args) throws IOException {
-	    String[] tests = new String[8];
+    public static void main(String[] args) throws IOException {
+        String[] tests = new String[8];
 
-	    // Paste your main folder path here
-	    String mainFolderPath = "/home/mario/git/MiniJava/src/main/java/br/ufpe/cin/if688/minijava/main";
+        // Paste your main folder path here
+        String mainFolderPath = "/home/mario/git/MiniJava/src/main/java/br/ufpe/cin/if688/minijava/main";
 
-	    tests[0] = mainFolderPath + "/tests/BinarySearch";
+        tests[0] = mainFolderPath + "/tests/BinarySearch";
         tests[1] = mainFolderPath + "/tests/BinaryTree";
         tests[2] = mainFolderPath + "/tests/BubbleSort";
         tests[3] = mainFolderPath + "/tests/Factorial";
@@ -25,11 +25,11 @@ public class Main {
         tests[6] = mainFolderPath + "/tests/QuickSort";
         tests[7] = mainFolderPath + "/tests/TreeVisitor";
 
-        for(String test : tests){
+        for (String test : tests) {
             System.out.println();
             Program program = (Program) new MiniJavaVisitor().visit(new gParser(new CommonTokenStream(new gLexer(CharStreams.fromFileName(test)))).program());
             new PrettyPrintVisitor().visit(program);
         }
 
-	}
+    }
 }
