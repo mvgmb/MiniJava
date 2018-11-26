@@ -1,4 +1,4 @@
-package br.ufpe.cin.if688.minijava.main;
+package br.ufpe.cin.if688.minijava.visitor;
 
 import br.ufpe.cin.if688.minijava.ANTLR.gParser;
 import br.ufpe.cin.if688.minijava.ANTLR.gVisitor;
@@ -94,6 +94,7 @@ public class MiniJavaVisitor implements gVisitor {
     @Override
     public Object visitExp(ExpContext ctx) {
         int noExp = ctx.exp().size();
+        String test = ctx.getText();
 
         // | 'true'                                           0 // True
         // | 'false'                                          0 // False
@@ -104,10 +105,16 @@ public class MiniJavaVisitor implements gVisitor {
 
         if (noExp == 0) {
             String s = ctx.getText();
+            String id = "";
+            if(ctx.identifier() != null)
+                id = ctx.identifier().getText();
+
             if ("true".equals(s)) return new True();
             else if ("false".equals(s)) return new False();
             else if ("this".equals(s)) return new This();
-            else if (s != null && "n".equals(s.substring(0, 1))) {
+            // new_node.Init(v_key)
+            // newObject()
+            else if (s != null && !id.equals("") && !(s.substring(0, id.length()).equals(id))) {
                 Identifier i = (Identifier) ctx.identifier().accept(this);
                 return new NewObject(i);
             } else if (s != null && s.matches("[-+]?\\d*\\.?\\d+")) { // checks if s is Numeric (thank you stack overflow)
@@ -122,14 +129,14 @@ public class MiniJavaVisitor implements gVisitor {
         // | 'new' 'int' '[' exp ']'                          1 // NewArray
         // | exp '.length'                                    1 // ArrayLength
 
-        else if (noExp == 1) {
+        else if (noExp == 1 && ctx.identifier() == null) {
             String s = ctx.getText();
             Exp e = (Exp) ctx.exp(0).accept(this);
-
-            if ("(".equals(s)) return e;
-            else if ("!".equals(s)) return new Not(e);
-            else if ("new".equals(s)) return new NewArray(e);
-            else return new ArrayLength(e);
+            if (s.length() >= 1 && "(".equals(s.substring(0, 1))) return e;
+            else if (s.length() >= 1 && "!".equals(s.substring(0, 1))) return new Not(e);
+            else if (s.length() >= 6 && "newint".equals(s.substring(0, 6))) { return new NewArray(e); }
+            else if (s.length() > 7 && ".length".equals(s.substring(s.length() - 7))) { return new ArrayLength(e); }
+            else return e;
         }
 
         // | exp '[' exp ']'                                  2 4  // ArrayLookup
