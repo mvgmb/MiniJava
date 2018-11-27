@@ -1,47 +1,15 @@
 package br.ufpe.cin.if688.minijava.visitor;
 
-import br.ufpe.cin.if688.minijava.ast.And;
-import br.ufpe.cin.if688.minijava.ast.ArrayAssign;
-import br.ufpe.cin.if688.minijava.ast.ArrayLength;
-import br.ufpe.cin.if688.minijava.ast.ArrayLookup;
-import br.ufpe.cin.if688.minijava.ast.Assign;
-import br.ufpe.cin.if688.minijava.ast.Block;
-import br.ufpe.cin.if688.minijava.ast.BooleanType;
-import br.ufpe.cin.if688.minijava.ast.Call;
-import br.ufpe.cin.if688.minijava.ast.ClassDeclExtends;
-import br.ufpe.cin.if688.minijava.ast.ClassDeclSimple;
-import br.ufpe.cin.if688.minijava.ast.False;
-import br.ufpe.cin.if688.minijava.ast.Formal;
-import br.ufpe.cin.if688.minijava.ast.Identifier;
-import br.ufpe.cin.if688.minijava.ast.IdentifierExp;
-import br.ufpe.cin.if688.minijava.ast.IdentifierType;
-import br.ufpe.cin.if688.minijava.ast.If;
-import br.ufpe.cin.if688.minijava.ast.IntArrayType;
-import br.ufpe.cin.if688.minijava.ast.IntegerLiteral;
-import br.ufpe.cin.if688.minijava.ast.IntegerType;
-import br.ufpe.cin.if688.minijava.ast.LessThan;
-import br.ufpe.cin.if688.minijava.ast.MainClass;
-import br.ufpe.cin.if688.minijava.ast.MethodDecl;
-import br.ufpe.cin.if688.minijava.ast.Minus;
-import br.ufpe.cin.if688.minijava.ast.NewArray;
-import br.ufpe.cin.if688.minijava.ast.NewObject;
-import br.ufpe.cin.if688.minijava.ast.Not;
-import br.ufpe.cin.if688.minijava.ast.Plus;
-import br.ufpe.cin.if688.minijava.ast.Print;
-import br.ufpe.cin.if688.minijava.ast.Program;
-import br.ufpe.cin.if688.minijava.ast.This;
-import br.ufpe.cin.if688.minijava.ast.Times;
-import br.ufpe.cin.if688.minijava.ast.True;
-import br.ufpe.cin.if688.minijava.ast.VarDecl;
-import br.ufpe.cin.if688.minijava.ast.While;
+import br.ufpe.cin.if688.minijava.ast.*;
 import br.ufpe.cin.if688.minijava.symboltable.Class;
 import br.ufpe.cin.if688.minijava.symboltable.Method;
 import br.ufpe.cin.if688.minijava.symboltable.SymbolTable;
-import br.ufpe.cin.if688.minijava.visitor.IVisitor;
 
 public class BuildSymbolTableVisitor implements IVisitor<Void> {
 
 	SymbolTable symbolTable;
+	private Class currClass;
+	private Method currMethod;
 
 	public BuildSymbolTableVisitor() {
 		symbolTable = new SymbolTable();
@@ -50,9 +18,6 @@ public class BuildSymbolTableVisitor implements IVisitor<Void> {
 	public SymbolTable getSymbolTable() {
 		return symbolTable;
 	}
-
-	private Class currClass;
-	private Method currMethod;
 
 	// MainClass m;
 	// ClassDeclList cl;

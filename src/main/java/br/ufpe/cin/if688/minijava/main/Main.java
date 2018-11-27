@@ -5,9 +5,9 @@ import br.ufpe.cin.if688.minijava.ANTLR.gParser;
 import br.ufpe.cin.if688.minijava.ast.Program;
 import br.ufpe.cin.if688.minijava.visitor.BuildSymbolTableVisitor;
 import br.ufpe.cin.if688.minijava.visitor.MiniJavaVisitor;
-import br.ufpe.cin.if688.minijava.visitor.PrettyPrintVisitor;
 import br.ufpe.cin.if688.minijava.visitor.TypeCheckVisitor;
-import org.antlr.v4.runtime.*;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
 
 import java.io.IOException;
 

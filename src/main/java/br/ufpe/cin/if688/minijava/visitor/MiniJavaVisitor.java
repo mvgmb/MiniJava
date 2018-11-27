@@ -1,14 +1,13 @@
 package br.ufpe.cin.if688.minijava.visitor;
 
 import br.ufpe.cin.if688.minijava.ANTLR.gParser;
+import br.ufpe.cin.if688.minijava.ANTLR.gParser.*;
 import br.ufpe.cin.if688.minijava.ANTLR.gVisitor;
 import br.ufpe.cin.if688.minijava.ast.*;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.RuleNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
-
-import br.ufpe.cin.if688.minijava.ANTLR.gParser.*;
 
 public class MiniJavaVisitor implements gVisitor {
 
@@ -106,14 +105,14 @@ public class MiniJavaVisitor implements gVisitor {
         if (noExp == 0) {
             String s = ctx.getText();
             String id = "";
-            if(ctx.identifier() != null)
+            if (ctx.identifier() != null)
                 id = ctx.identifier().getText();
 
             if ("true".equals(s)) return new True();
             else if ("false".equals(s)) return new False();
             else if ("this".equals(s)) return new This();
-            // new_node.Init(v_key)
-            // newObject()
+                // new_node.Init(v_key)
+                // newObject()
             else if (s != null && !id.equals("") && !(s.substring(0, id.length()).equals(id))) {
                 Identifier i = (Identifier) ctx.identifier().accept(this);
                 return new NewObject(i);
@@ -134,9 +133,11 @@ public class MiniJavaVisitor implements gVisitor {
             Exp e = (Exp) ctx.exp(0).accept(this);
             if (s.length() >= 1 && "(".equals(s.substring(0, 1))) return e;
             else if (s.length() >= 1 && "!".equals(s.substring(0, 1))) return new Not(e);
-            else if (s.length() >= 6 && "newint".equals(s.substring(0, 6))) { return new NewArray(e); }
-            else if (s.length() > 7 && ".length".equals(s.substring(s.length() - 7))) { return new ArrayLength(e); }
-            else return e;
+            else if (s.length() >= 6 && "newint".equals(s.substring(0, 6))) {
+                return new NewArray(e);
+            } else if (s.length() > 7 && ".length".equals(s.substring(s.length() - 7))) {
+                return new ArrayLength(e);
+            } else return e;
         }
 
         // | exp '[' exp ']'                                  2 4  // ArrayLookup
