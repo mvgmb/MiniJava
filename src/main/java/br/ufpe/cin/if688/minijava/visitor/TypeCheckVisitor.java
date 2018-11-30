@@ -1,10 +1,11 @@
 package br.ufpe.cin.if688.minijava.visitor;
 
-import br.ufpe.cin.if688.minijava.Exceptions.Exception;
+import br.ufpe.cin.if688.minijava.exceptions.Exception;
 import br.ufpe.cin.if688.minijava.ast.*;
 import br.ufpe.cin.if688.minijava.symboltable.Class;
 import br.ufpe.cin.if688.minijava.symboltable.Method;
 import br.ufpe.cin.if688.minijava.symboltable.SymbolTable;
+import br.ufpe.cin.if688.minijava.symboltable.Variable;
 
 public class TypeCheckVisitor implements IVisitor<Type> {
 
@@ -108,7 +109,8 @@ public class TypeCheckVisitor implements IVisitor<Type> {
         // Updating current method
         currMethod = currClass.getMethod(n.i.toString());
 
-        n.t.accept(this);
+        Type returnShouldBe = n.t.accept(this);
+
         n.i.accept(this);
         for (int i = 0; i < n.fl.size(); i++) {
             n.fl.elementAt(i).accept(this);
@@ -119,7 +121,14 @@ public class TypeCheckVisitor implements IVisitor<Type> {
         for (int i = 0; i < n.sl.size(); i++) {
             n.sl.elementAt(i).accept(this);
         }
-        n.e.accept(this);
+
+        Type returnType = n.e.accept(this);
+
+        // Check if method's return is the same as the method declaration
+        if (!symbolTable.compareTypes(returnShouldBe, returnType)) {
+            Exception.error(returnShouldBe, returnType);
+        }
+
 
         // Resetting current method
         currMethod = null;
@@ -244,6 +253,7 @@ public class TypeCheckVisitor implements IVisitor<Type> {
             Exception.error(INTEGER, e1);
         if (!(e2 instanceof IntegerType))
             Exception.error(INTEGER, e2);
+
         return BOOLEAN;
     }
 
@@ -341,19 +351,29 @@ public class TypeCheckVisitor implements IVisitor<Type> {
 
         Class tmp = currClass;
 
-        for (int i = 0; i < n.el.size(); i++) {
+        int i;
+        for (i = 0; i < n.el.size(); i++) {
             boolean isThis = (n.el.elementAt(i) instanceof This);
             if (isThis) currClass = originalClass;
 
             Type el = n.el.elementAt(i).accept(this);
 
             if (isThis) currClass = tmp;
+            Variable var = currClass.getMethod(n.i.toString()).getParamAt(i);
+
+            if (var == null) {
+                throw new RuntimeException("Method " + currClass.getMethod(n.i.toString()).getId() + " call has too many arguments");
+            }
 
             Type param = currClass.getMethod(n.i.toString()).getParamAt(i).type();
 
             if (!(symbolTable.compareTypes(param, el) || symbolTable.compareTypes(el, param))) {
                 Exception.error(param, el);
             }
+        }
+
+        if(currClass.getMethod(n.i.toString()).getParamAt(i) != null){
+            throw new RuntimeException("Method " + currClass.getMethod(n.i.toString()).getId() + " has too few arguments");
         }
 
         currClass = originalClass;
@@ -365,9 +385,7 @@ public class TypeCheckVisitor implements IVisitor<Type> {
         return INTEGER;
     }
 
-    public Type visit(True n) {
-        return BOOLEAN;
-    }
+    public Type visit(True n) { return BOOLEAN; }
 
     public Type visit(False n) {
         return BOOLEAN;
@@ -398,7 +416,11 @@ public class TypeCheckVisitor implements IVisitor<Type> {
 
     // Exp e;
     public Type visit(Not n) {
-        n.e.accept(this);
+        Type e = n.e.accept(this);
+        if (!(e instanceof BooleanType)) {
+            Exception.error(BOOLEAN, e);
+        }
+
         return BOOLEAN;
     }
 
@@ -423,7 +445,7 @@ public class TypeCheckVisitor implements IVisitor<Type> {
         }
         Class c = symbolTable.getClass(id);
         if (c == null)
-            throw new RuntimeException(String.format(id + " could not be found"));
+            throw new RuntimeException(id + " could not be found");
 
         return c.type();
     }

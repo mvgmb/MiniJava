@@ -75,8 +75,7 @@ public class BuildSymbolTableVisitor implements IVisitor<Void> {
         isDuplicate = !symbolTable.addClass(n.i.toString(), null);
 
         if(isDuplicate) {
-            System.out.println("The class " + n.i.toString() + " was already declared!");
-            return null;
+			throw new RuntimeException("The class " + n.i.toString() + " was already declared!");
         }
 
         // Updating current class
@@ -113,8 +112,7 @@ public class BuildSymbolTableVisitor implements IVisitor<Void> {
         isDuplicate = !symbolTable.addClass(n.i.toString(), n.j.toString());
 
         if(isDuplicate) {
-            System.out.println("The class " + n.i.toString() + " was already declared!");
-            return null;
+            throw new RuntimeException(String.format("The class " + n.i.toString() + " was already declared!"));
         }
 
         // Updating current class
@@ -149,7 +147,7 @@ public class BuildSymbolTableVisitor implements IVisitor<Void> {
         }
 
         if(isDuplicate) {
-            System.out.println("The variable " + n.i.toString() + " was already declared!");
+            throw new RuntimeException(String.format("The variable " + n.i.toString() + " was already declared!"));
         }
 
 		n.t.accept(this);
@@ -173,12 +171,11 @@ public class BuildSymbolTableVisitor implements IVisitor<Void> {
             isDuplicate = !currClass.addMethod(n.i.toString(), n.t);
         }
         else {
-            System.out.println("Methods can't be declared outside a class!");
-            return null;
+            throw new RuntimeException(String.format("Methods can't be declared outside a class!"));
         }
 
         if(isDuplicate) {
-            System.out.println("Duplicate class: " + n.i.toString());
+            throw new RuntimeException(String.format("Duplicate class: " + n.i.toString()));
         }
 
         currMethod = currClass.getMethod(n.i.toString());
@@ -211,13 +208,11 @@ public class BuildSymbolTableVisitor implements IVisitor<Void> {
             isDuplicate = !currMethod.addParam(n.i.toString(), n.t);
         }
         else {
-            System.out.println("Missing method");
-            return null;
+            throw new RuntimeException(String.format("Missing method"));
         }
 
         if(isDuplicate) {
-            System.out.println("Duplicate parameter: " + n.i.toString());
-            return null;
+            throw new RuntimeException(String.format("Duplicate parameter: " + n.i.toString()));
         }
 
 
